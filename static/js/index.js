@@ -1,32 +1,64 @@
-async function main() {
-    setInterval(async () => {
-        console.log("loop example"); 
-    }, 5000);
-    example();  
+// Initialize current angles for motors S and Q
+let currentAngleS = 0;
+let currentAngleQ = 180;
+
+// Function to send command
+async function sendCommand() {
+  const motorSelect = document.getElementById("motorSelect");
+  const angleInput = document.getElementById("angleInput");
+
+  const motor = motorSelect.value;
+  const angle = angleInput.value;
+
+  // Construct command
+  const command = `${motor} ${angle}`;
+
+  // Update current location display
+  updateCurrentLocation(motor, angle);
+
+  try {
+    // Send serial command
+    await fetch(`/api/sendcommand?command=${command}`);
+  } catch (error) {
+    console.error("Error sending command:", error);
+  }
 }
 
-async function example() {
-    console.log("example!");
-    let result = await fetch("/api/example");
-    document.getElementById("example_header").innerHTML = await result.text();
+// Function to update and display current location
+function updateCurrentLocation(motor, angle) {
+  if (motor === "S") {
+    currentAngleS = angle;
+  } else if (motor === "Q") {
+    currentAngleQ = angle;
+  }
+
+  document.getElementById(
+    "currentLocation"
+  ).textContent = `Current Location: Motor S - ${currentAngleS}, Motor Q - ${currentAngleQ}`;
 }
 
-async function sendCommand(command) {
-    await fetch(`/api/sendcommand?command=${command}`)
-    
+// Function to update slider value display
+function updateSliderValue() {
+  const angleInput = document.getElementById("angleInput");
+  const angleValue = document.getElementById("angleValue");
+  angleValue.textContent = angleInput.value;
 }
 
-// Example function to send a goto command to the server
-async function goTo() {
+// Function to update slider position based on motor selection
+function updateSliderPosition() {
+  const motorSelect = document.getElementById("motorSelect");
+  const angleInput = document.getElementById("angleInput");
 
-    x = document.getElementById("x_input").value;
-    y = document.getElementById("y_input").value;
-    z = document.getElementById("z_input").value;
-    console.log(x)
-    console.log(x, y, z);
-    await fetch(`/api/goto?x=${x}&y=${y}&z=${z}&sys=${0}`);
+  const motor = motorSelect.value;
+  const angle = motor === "S" ? currentAngleS : currentAngleQ;
 
+  angleInput.value = angle;
+  updateSliderValue();
 }
 
+// Display initial current location
+updateCurrentLocation("S", currentAngleS);
+updateCurrentLocation("Q", currentAngleQ);
 
-main();
+// Initialize slider value display
+updateSliderValue();

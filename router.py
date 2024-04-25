@@ -19,4 +19,5 @@ async def goto(x: float, y: float, z: float, sys: int):
 
 @router.get("/sendcommand")
 async def sendcommand(command):
+    print(f"sending command: {command}")
     await bridge.send_command(command)
