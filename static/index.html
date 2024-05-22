@@ -1,58 +1,157 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Robot Control</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
-        body {
-            padding: 20px;
-        }
-
-        .command-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .command-input {
-            flex: 1;
-            margin-right: 10px;
-        }
-
-        .send-button {
-            min-width: 120px;
-        }
-
-        .input-group {
-            margin-bottom: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Arm Kinematics</title>
+    <!-- <link rel="stylesheet" href="styles.css"> -->
 </head>
 
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="input-group mb-3">
-                    <select id="motorSelect" class="form-select" onchange="updateSliderPosition()">
-                        <option value="S">Motor S</option>
-                        <option value="Q">Motor Q</option>
-                    </select>
-                    <input type="range" id="angleInput" class="form-range" min="0" max="180" value="0"
-                        onchange="updateSliderValue()">
-                    <span id="angleValue">0</span>
-                </div>
-                <button class="btn btn-primary" onclick="sendCommand()">Send Command</button>
-                <p id="currentLocation"></p>
-            </div>
+    <div class="container">
+        <h1>Robot Arm Kinematics</h1>
+
+        <div class="form-container">
+            <h2>Forward Kinematics</h2>
+            <form id="forward-form">
+                <label for="theta_1">Theta 1:</label>
+                <input type="number" id="theta_1" name="theta_1" required>
+
+                <label for="theta_2">Theta 2:</label>
+                <input type="number" id="theta_2" name="theta_2" required>
+
+                <label for="theta_3">Theta 3:</label>
+                <input type="number" id="theta_3" name="theta_3" required>
+
+                <button type="submit">Calculate Forward Kinematics</button>
+            </form>
+            <div id="forward-result"></div>
+        </div>
+
+        <div class="form-container">
+            <h2>Inverse Kinematics</h2>
+            <form id="inverse-form">
+                <label for="pos_x">Position X:</label>
+                <input type="number" id="pos_x" name="pos_x" required>
+
+                <label for="pos_y">Position Y:</label>
+                <input type="number" id="pos_y" name="pos_y" required>
+
+                <label for="pos_z">Position Z:</label>
+                <input type="number" id="pos_z" name="pos_z" required>
+
+                <button type="submit">Calculate Inverse Kinematics</button>
+            </form>
+            <div id="inverse-result"></div>
+        </div>
+        <div class="form-container">
+            <h2>Send command</h2>
+            <form id="send-form">
+                <label for="theta_11">Theta 1:</label>
+                <input type="number" id="theta_11" name="theta_1" required>
+
+                <label for="theta_21">Theta 2:</label>
+                <input type="number" id="theta_21" name="theta_2" required>
+
+                <label for="theta_31">Theta 3:</label>
+                <input type="number" id="theta_31" name="theta_3" required>
+
+                <button type="submit" style="background-color: #ff0000;">Send position to robot</button>
+            </form>
+            <div id="inverse-result"></div>
         </div>
     </div>
+
+
+    <script src="js/index_old.js"></script>
+
     <script src="js/index.js"></script>
 </body>
+
+<style>
+    .command-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .command-input {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .send-button {
+        min-width: 120px;
+    }
+
+    .input-group {
+        margin-bottom: 10px;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-container {
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 5px;
+    }
+
+    input {
+        margin-bottom: 10px;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        padding: 10px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    #forward-result,
+    #inverse-result {
+        margin-top: 20px;
+        padding: 10px;
+        background: #e9e9e9;
+        border-radius: 4px;
+    }
+</style>
 
 </html>

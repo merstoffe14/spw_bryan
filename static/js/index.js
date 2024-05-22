@@ -1,64 +1,69 @@
-// Initialize current angles for motors S and Q
-let currentAngleS = 0;
-let currentAngleQ = 180;
+document.addEventListener("DOMContentLoaded", function () {
+  const forwardForm = document.getElementById("forward-form");
+  const forwardResult = document.getElementById("forward-result");
 
-// Function to send command
-async function sendCommand() {
-  const motorSelect = document.getElementById("motorSelect");
-  const angleInput = document.getElementById("angleInput");
+  const inverseForm = document.getElementById("inverse-form");
+  const inverseResult = document.getElementById("inverse-result");
 
-  const motor = motorSelect.value;
-  const angle = angleInput.value;
+  forwardForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-  // Construct command
-  const command = `${motor} ${angle}`;
+    const theta1 = document.getElementById("theta_1").value;
+    const theta2 = document.getElementById("theta_2").value;
+    const theta3 = document.getElementById("theta_3").value;
 
-  // Update current location display
-  updateCurrentLocation(motor, angle);
+    const response = await fetch("/api/forward_kinematics/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        theta_1: parseFloat(theta1),
+        theta_2: parseFloat(theta2),
+        theta_3: parseFloat(theta3),
+      }),
+    });
 
-  try {
-    // Send serial command
-    await fetch(`/api/sendcommand?command=${command}`);
-  } catch (error) {
-    console.error("Error sending command:", error);
-  }
-}
+    const result = await response.json();
+    if (response.ok) {
+      forwardResult.innerHTML = `
+                <p>Position X: ${result.pos_x.toFixed(2)}</p>
+                <p>Position Y: ${result.pos_y.toFixed(2)}</p>
+                <p>Position Z: ${result.pos_z.toFixed(2)}</p>
+            `;
+    } else {
+      forwardResult.innerHTML = `<p>Error: ${result.detail}</p>`;
+    }
+  });
 
-// Function to update and display current location
-function updateCurrentLocation(motor, angle) {
-  if (motor === "S") {
-    currentAngleS = angle;
-  } else if (motor === "Q") {
-    currentAngleQ = angle;
-  }
+  inverseForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-  document.getElementById(
-    "currentLocation"
-  ).textContent = `Current Location: Motor S - ${currentAngleS}, Motor Q - ${currentAngleQ}`;
-}
+    const posX = document.getElementById("pos_x").value;
+    const posY = document.getElementById("pos_y").value;
+    const posZ = document.getElementById("pos_z").value;
 
-// Function to update slider value display
-function updateSliderValue() {
-  const angleInput = document.getElementById("angleInput");
-  const angleValue = document.getElementById("angleValue");
-  angleValue.textContent = angleInput.value;
-}
+    const response = await fetch("/api/inverse_kinematics/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        pos_x: parseFloat(posX),
+        pos_y: parseFloat(posY),
+        pos_z: parseFloat(posZ),
+      }),
+    });
 
-// Function to update slider position based on motor selection
-function updateSliderPosition() {
-  const motorSelect = document.getElementById("motorSelect");
-  const angleInput = document.getElementById("angleInput");
-
-  const motor = motorSelect.value;
-  const angle = motor === "S" ? currentAngleS : currentAngleQ;
-
-  angleInput.value = angle;
-  updateSliderValue();
-}
-
-// Display initial current location
-updateCurrentLocation("S", currentAngleS);
-updateCurrentLocation("Q", currentAngleQ);
-
-// Initialize slider value display
-updateSliderValue();
+    const result = await response.json();
+    if (response.ok) {
+      inverseResult.innerHTML = `
+                <p>Theta 1: ${result.theta_1.toFixed(2)}</p>
+                <p>Theta 2: ${result.theta_2.toFixed(2)}</p>
+                <p>Theta 3: ${result.theta_3.toFixed(2)}</p>
+            `;
+    } else {
+      inverseResult.innerHTML = `<p>Error: ${result.detail}</p>`;
+    }
+  });
+});
